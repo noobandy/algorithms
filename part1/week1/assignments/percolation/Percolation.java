@@ -7,6 +7,7 @@ public class Percolation {
    private boolean[][] sites;
    private WeightedQuickUnionUF uf;
    private int openSites;
+   private int n;
 
    // create n-by-n grid, with all sites blocked
    public Percolation(int n) {
@@ -14,14 +15,18 @@ public class Percolation {
       if (n <= 0) {
          throw new IllegalArgumentException("illeagl value of n");
       }
+      this.n = n;
 
       sites = new boolean[n][n];
 
       uf = new WeightedQuickUnionUF((n * n) + 2);
 
       virtualSiteTop = 0;
+
       virtualSiteBottom = (n * n) + 1;
+
       openSites = 0;
+      
       //connect top row sites with virtual top
       for (int j = 1; j <= n; j++) {
          uf.union(virtualSiteTop, siteToObject(1, j, n));
@@ -38,7 +43,7 @@ public class Percolation {
    }
 
    private void validateRange(int row, int col) {
-      if (row < 1 || row > sites.length || col < 1 || col > sites.length) {
+      if (row < 1 || row > n || col < 1 || col > n) {
          throw new IndexOutOfBoundsException();
       }
    }
@@ -46,9 +51,11 @@ public class Percolation {
    // open site (row, col) if it is not open already
    public void open(int row, int col) {
       validateRange(row, col);
-      if (!sites[row - 1][col - 1]) {
+
+      if (!isOpen(row, col)) {
          //open site
          openSites++;
+
          sites[row - 1][col - 1] = true;
 
          int topRow = row - 1;
@@ -56,35 +63,36 @@ public class Percolation {
          int leftColumn = col - 1;
          int rightColumn = col + 1;
 
-         int sourceSite = siteToObject(row, col, sites.length);
+         int sourceSite = siteToObject(row, col, n);
          //is top open
          if (topRow >= 1 && sites[topRow - 1][col - 1]) {
-            uf.union(sourceSite, siteToObject(topRow, col, sites.length));
+            uf.union(sourceSite, siteToObject(topRow, col, n));
          }
 
          //is bottom open
-         if (bottomRow <= sites.length && sites[bottomRow - 1][col - 1]) {
-            uf.union(sourceSite, siteToObject(bottomRow, col, sites.length));
+         if (bottomRow <= n && sites[bottomRow - 1][col - 1]) {
+            uf.union(sourceSite, siteToObject(bottomRow, col, n));
          }
          //is left open
          if (leftColumn >= 1 && sites[row - 1][leftColumn - 1]) {
-            uf.union(sourceSite, siteToObject(row, leftColumn, sites.length));
+            uf.union(sourceSite, siteToObject(row, leftColumn, n));
          }
          //is right open
-         if (rightColumn <= sites.length && sites[row - 1][rightColumn - 1]) {
-            uf.union(sourceSite, siteToObject(row, rightColumn, sites.length));
+         if (rightColumn <= n && sites[row - 1][rightColumn - 1]) {
+            uf.union(sourceSite, siteToObject(row, rightColumn, n));
          }
       }
    }
    // is site (row, col) open?
    public boolean isOpen(int row, int col) {
       validateRange(row, col);
+
       return sites[row - 1][col - 1];
    }
    // is site (row, col) full?
    public boolean isFull(int row, int col) {
       validateRange(row, col);
-      return isOpen(row, col) && uf.connected(siteToObject(row, col, sites.length), virtualSiteTop);
+      return isOpen(row, col) && uf.connected(siteToObject(row, col, n), virtualSiteTop);
    }
    // number of open sites
    public int numberOfOpenSites() {
