@@ -1,29 +1,20 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 public class Permutation {
 
-	public static void main(String[] args) {
-		// reservoir sampling
-		int k = Integer.parseInt(args[0]);
-		String[] r = new String[k];
-		int i = 0;
-		for (; i < k; i++) {
-			r[i] = StdIn.readString();
-		}
+    public static void main(String[] args) {
 
-		while (!StdIn.isEmpty()) {
-			int j = StdRandom.uniform(i++);
-			if (j < k) {
-				r[j] = StdIn.readString();
-			} else {
-				StdIn.readString();
-			}
-		}
+        int k = Integer.parseInt(args[0]);
+        
+        RandomizedQueue<String> queue = new RandomizedQueue<String>();
 
-		for (String str : r) {
-			StdOut.println(str);
-		}
-	}
+        while (!StdIn.isEmpty()) {
+            queue.enqueue(StdIn.readString());
+        }
+
+        for (int i = 0; i < k; i++) {
+            StdOut.println(queue.dequeue());
+        }
+    }
 }
