@@ -59,17 +59,27 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
-        int deltaY = that.y - y;
-        int deltaX = that.x - x;
-        
-        if (deltaX == 0 && deltaY ==0) {
-              return Double.NEGATIVE_INFINITY;
-        } else if (deltaX == 0) {
-            return Double.POSITIVE_INFINITY;
-        } else if (deltaY == 0) {
-            return 0.0;
+
+        if (that == null) {
+            throw new NullPointerException();
+        }
+
+        if (y == that.y) {
+
+            if (x == that.x) {
+                return Double.NEGATIVE_INFINITY;
+            } else {
+                return 0.0;
+            }
         } else {
-            return (double) deltaY / deltaX;
+
+            if (x == that.x) {
+                return Double.POSITIVE_INFINITY;
+            } else {
+                double deltaY = (double) (that.y - y);
+                double deltaX = (double) (that.x - x);
+                return deltaY / deltaX;
+            }
         }
 
     }
@@ -88,12 +98,10 @@ public class Point implements Comparable<Point> {
      */
     public int compareTo(Point that) {
 
-        if (y < that.y || (y == that.y && x < that.x)) {
-            return -1;
-        } else if (y == that.y && x == that.x) {
-            return 0;
+        if (y == that.y) {
+            return x - that.x;
         } else {
-            return 1;
+            return y - that.y;
         }
     }
 
@@ -105,29 +113,22 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
 
-        return new SlopeComparator(this);
-    }
+        class SlopeOrder implements Comparator<Point> {
+            public int compare(Point p1, Point p2) {
 
-    private static class SlopeComparator implements Comparator<Point> {
-        private Point source;
-        public SlopeComparator(Point source) {
-            this.source = source;
-        }
+                if (p1 == null || p2 == null) {
+                    throw new NullPointerException();
+                }
 
-        public int compare(Point p1, Point p2) {
-            Double slopSP1 = source.slopeTo(p1);
-            Double slopeSP2 = source.slopeTo(p2);
-            if (slopSP1 < slopeSP2) {
-                return -1;
-            } else if (slopSP1 > slopeSP2) {
-                return 1;
-            } else {
-                return 0;
+                double slopeP1 = slopeTo(p1);
+                double slopeP2 = slopeTo(p2);
+
+                return Double.compare(slopeP1, slopeP2);
             }
-
         }
-    }
 
+        return new SlopeOrder();
+    }
 
     /**
      * Returns a string representation of this point.
