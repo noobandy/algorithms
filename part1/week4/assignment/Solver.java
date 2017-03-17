@@ -1,28 +1,30 @@
 import edu.princeton.cs.algs4.MinPQ;
-import java.util.Iterator;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Solver {
 
-    private Node solution;
+    private Deque<Board> steps;
 
     private static class Node implements Comparable<Node> {
         private Board board;
         private int moves;
         private Node prev;
 
-        public Node(Board board, Node prev, int moves) {
+        public Node(Board board, Node prev) {
             this.board = board;
             this.prev = prev;
-            this.moves = moves;
+            if (prev != null) {
+                moves = prev.moves + 1;
+            }
         }
 
         public int compareTo(Node other) {
-            return board.manhattan() + moves - other.board.manhattan() - other.moves;
+            return (board.manhattan() + moves) - (other.board.manhattan() + other.moves);
         }
+
     }
 
     // find a solution to the initial board (using the A* algorithm)
@@ -32,105 +34,63 @@ public class Solver {
             throw new NullPointerException();
         }
 
-        boolean turnOriginal = true;
+        Set<String> closed = new HashSet<String>();
 
-        Node original = new Node(initial, null, 0);
+        MinPQ<Node> fringe = new MinPQ<Node>();
 
-        Node twin = new Node(initial.twin(), null, 0);
+        fringe.insert(new Node(initial, null));
+        fringe.insert(new Node(initial.twin(), null));
 
-        List<Board> processedOriginal = new ArrayList<Board>();
 
-        List<Board> processedTwin = new ArrayList<Board>();
+        while (!fringe.isEmpty()) {
 
-        MinPQ<Node> queueOriginal = new MinPQ<Node>();
+            Node min = fringe.delMin();
 
-        MinPQ<Node> queueTwin = new MinPQ<Node>();
+            closed.add(min.board.toString());
 
-        queueOriginal.insert(original);
-
-        queueTwin.insert(twin);
-
-        while (!queueOriginal.isEmpty() && !queueTwin.isEmpty()) {
-
-            if (turnOriginal) {
-                turnOriginal = false;
-                Node min = queueOriginal.delMin();
-
-                processedOriginal.add(min.board);
-
-                if (min.board.isGoal()) {
-                    solution = min;
-                    break;
+            if (min.board.isGoal()) {
+                Deque<Board> result = new LinkedList<Board>();
+                while (min != null) {
+                    result.push(min.board);
+                    min = min.prev;
                 }
 
-                Iterator<Board> neighbors = min.board.neighbors().iterator();
-
-                while (neighbors.hasNext()) {
-                    Board neighbor = neighbors.next();
-
-                    if (!processedOriginal.contains(neighbor)) {
-                        Node node = new Node(neighbor, min, min.moves + 1);
-
-                        queueOriginal.insert(node);
-
-                    }
-                }
-            } else {
-                turnOriginal = true;
-                Node min = queueTwin.delMin();
-
-                processedTwin.add(min.board);
-
-                if (min.board.isGoal()) {
-                    break;
+                if (result.peek().equals(initial)) {
+                    steps = result;
                 }
 
-                Iterator<Board> neighbors = min.board.neighbors().iterator();
+                break;
+            }
 
-                while (neighbors.hasNext()) {
-                    Board neighbor = neighbors.next();
-
-                    if (!processedTwin.contains(neighbor)) {
-                        Node node = new Node(neighbor, null, min.moves + 1);
-
-                        queueTwin.insert(node);
-
-                    }
+            for (Board board : min.board.neighbors()) {
+                if (!closed.contains(board.toString())) {
+                    fringe.insert(new Node(board, min));
                 }
             }
 
         }
 
     }
-    // is the initial board solvable?
+// is the initial board solvable?
     public boolean isSolvable() {
-        return solution != null;
+        return steps != null;
     }
 
-    // min number of moves to solve initial board; -1 if unsolvable
+// min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
         if (!isSolvable()) {
             return -1;
         }
 
-        return solution.moves;
+        return steps.size() - 1;
     }
 
-    // sequence of boards in a shortest solution; null if unsolvable
+// sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
         if (!isSolvable()) {
             return null;
         }
 
-        Deque<Board> stack = new LinkedList<Board>();
-
-        Node node = solution;
-
-        while (node != null) {
-            stack.push(node.board);
-            node = node.prev;
-        }
-
-        return stack;
+        return steps;
     }
 }
