@@ -27,6 +27,7 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import java.util.Iterator;
 
 public class PuzzleChecker {
 
@@ -49,6 +50,13 @@ public class PuzzleChecker {
             Board initial = new Board(tiles);
             Solver solver = new Solver(initial);
             StdOut.println(filename + ": " + solver.moves());
+
+            if(solver.isSolvable()) {
+                Iterator<Board> iterator = solver.solution().iterator();
+                while(iterator.hasNext()) {
+                    System.out.println(iterator.next());
+                }
+            }
         }
     }
 }
