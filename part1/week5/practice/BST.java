@@ -59,76 +59,80 @@ public class BST<E extends Comparable<E>> {
 		}
 	}
 
-	public void remove(E element) {
-		Node<E> parent = null;
-		Node<E> cur = root;
+	public void delete(E element) {
+		root = delete(root, element);
+	}
 
-		while (cur != null) {
-			prev = cur;
-			int cmp = element.compareTo(cur.element);
-			if (cmp < 0) {
-				cur = cur.left;
-			} else if (cmp > 0) {
-				cur = cur.right;
-			} else {
-				if (cur.left == null && cur.right) {
-					if (prev.left == cur) {
-						prev.left = null;
-					}
+	private Node<E> delete(Node<E> node, E element) {
+		if(node == null) {
+			return null;
+		}
 
-					if (prev.right = cur) {
-						prev.right = null;
-					}
-				} else if (cur.left == null) {
-					if (prev.left == cur) {
-						prev.left = null;
-					}
+		int cmp = element.compareTo(node.element);
 
-					if (prev.right = cur) {
-						prev.right = null;
-					}
-				} else if (cur.right == null) {
-					if(prev.left == cur) {
-						prev.left = null;
-					}
-
-					if(prev.right = cur) {
-						prev.right = null;
-					}
-				} else {
-
-				}
-				size--;
-				break;
+		if(cmp < 0) {
+			node.left = delete(node.left, element);
+		} else if(cmp > 0) {
+			node.right = delete(node.right, element);
+		} else {
+			if(node.left == null) {
+				return node.left;
 			}
+
+			if(node.right == null) {
+				return node.right;
+			}
+
+			Node t = node;
+
+			node = min(node.right);
+
+			node.right = deleteMin(t.right);
+
+			node.left = t.left
+
 		}
+
+		return node;
 	}
 
-	public E min() {
-		if (isEmpty()) {
-			return null;
+	private Node<E> min(Node<E> node) {
+		if(node.left == null) {
+			return node;
 		}
 
-		Node<E> cur = root;
-		while (cur.left != null) {
-			cur = cur.left;
-		}
-
-		return cur.element;
+		min(node.left);
 	}
 
-	public E max() {
-		if (isEmpty()) {
-			return null;
+	private Node<E> max(Node<E> node) {
+		if(node.right == null) {
+			return node;
 		}
 
-		Node<E> cur = root;
-		while (cur.right != null) {
-			cur = cur.right;
-		}
-
-		return cur.element;
+		max(node.right);
 	}
+
+	private Node<E> deleteMin(Node<E> node) {
+		if(node.left == null) {
+			return node.right;
+		}
+
+		node.left = deleteMin(node.left);
+
+		return node;
+	}
+
+	private Node<E> deleteMax(Node<E> node) {
+		if(node.right == null) {
+			return node.left;
+		}
+
+		node.right = deleteMax(node.right);
+
+		return node;
+	}
+
+
 
 	public int size() {
 		return size;
