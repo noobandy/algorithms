@@ -99,12 +99,9 @@ public class ST<K extends Comparable<K>, V> {
 
 			Node<K, V> t = node;
 
-			node = min(node.right);
+			node.value = min(node.right).value;
 
 			node.right = deleteMin(t.right);
-
-			node.left = t.left;
-
 		}
 
 		return node;
@@ -139,6 +136,19 @@ public class ST<K extends Comparable<K>, V> {
 
 	}
 
+	public void inOrder() {
+		inOrder(root);
+	}
+
+	private void inOrder(Node<K, V> node) {
+		if(node != null) {
+			inOrder(node.left);
+			System.out.println(node.value);
+			inOrder(node.right);
+		}
+
+	}
+
 	public static void main(String[] args) {
 		ST<String, String[]> st = new ST<String, String[]>();
 
@@ -155,6 +165,41 @@ public class ST<K extends Comparable<K>, V> {
 		st.delete("sushmay");
 		System.out.format("%s is %s present%n", "anandm", st.get("anandm") == null ? "not" : "");
 		System.out.format("%s is %s present%n", "sushmay", st.get("sushmay") == null ? "not": "");
+
+		ST<Integer, Integer> nums = new ST<Integer, Integer>();
+
+		for(Integer num : new int[] {5, 2, -4, 3, 18, 21, 19, 25}) {
+			nums.put(num, num);
+		}
+
+		nums.inOrder();
+
+		//  delete -4 (no child)
+		System.out.format("delete %d%n", -4);
+		nums.delete(-4);
+
+		nums.inOrder();
+
+		// delete 18 (single child)
+		System.out.format("delete %d%n", 18);
+		nums.delete(18);
+
+		nums.inOrder();
+
+		System.out.format("put %d%n", 12);
+		nums.put(12, 12);
+
+		nums.inOrder();
+
+		// delete 12 (both child)
+		System.out.format("delete %d%n", 12);
+		nums.delete(12);
+
+		nums.inOrder();
+
+
+
+
 
 	}
 
