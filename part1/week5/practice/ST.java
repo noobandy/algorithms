@@ -3,19 +3,27 @@ import java.util.LinkedList;
 
 public class ST<K extends Comparable<K>, V> {
 
-	private static final class Node<K, V> {
+	public static final class Entry<K, V> {
 		private K key;
 		private V value;
-		private Node<K, V> left;
-		private Node<K, V> right;
+		private Entry<K, V> left;
+		private Entry<K, V> right;
 
-		public Node(K key, V value) {
+		public Entry(K key, V value) {
 			this.key = key;
 			this.value = value;
 		}
+
+		public K getKey() {
+			return key;
+		}
+
+		public V getValue() {
+			return value;
+		}
 	}
 
-	private Node<K, V> root;
+	private Entry<K, V> root;
 
 	public ST() {
 
@@ -23,21 +31,23 @@ public class ST<K extends Comparable<K>, V> {
 
 	// add entry to symbol table
 	public void put(K key, V value) {
-		Node<K, V> node = new Node<K, V>(key, value);
-		root = put(root, node);
+		Entry<K, V> entry = new Entry<K, V>(key, value);
+		root = put(root, entry);
 	}
 
-	private Node<K, V> put(Node<K, V> parent, Node<K, V> node) {
+	private Entry<K, V> put(Entry<K, V> parent, Entry<K, V> entry) {
 		if(parent == null) {
-			return node;
+			return entry;
 		}
 
-		int cmp = node.key.compareTo(parent.key);
+		int cmp = entry.key.compareTo(parent.key);
 
 		if(cmp < 0) {
-			parent.left = put(parent.left, node);
+			parent.left = put(parent.left, entry);
+		} else if(cmp > 0) {
+			parent.right = put(parent.right, entry);
 		} else {
-			parent.right = put(parent.right, node);
+			parent.value = entry.value;
 		}
 
 		return parent;
@@ -45,28 +55,28 @@ public class ST<K extends Comparable<K>, V> {
 
 	// get value for key
 	public V get(K key) {
-		Node<K, V> node = get(root, key);
+		Entry<K, V> entry = get(root, key);
 
-		if(node == null) {
+		if(entry == null) {
 			return null;
 		} else {
-			return node.value;
+			return entry.value;
 		}
 	}
 
-	private Node<K, V> get(Node<K, V> node, K key) {
-		if(node == null) {
-			return node;
+	private Entry<K, V> get(Entry<K, V> entry, K key) {
+		if(entry == null) {
+			return entry;
 		}
 
-		int cmp = key.compareTo(node.key);
+		int cmp = key.compareTo(entry.key);
 
 		if(cmp < 0) {
-			return get(node.left, key);
+			return get(entry.left, key);
 		} else if(cmp > 0) {
-			return get(node.right, key);
+			return get(entry.right, key);
 		} else {
-			return node;
+			return entry;
 		}
 
 	}
@@ -76,77 +86,73 @@ public class ST<K extends Comparable<K>, V> {
 		root = delete(root, key);
 	}
 
-	private Node<K, V> delete(Node<K, V> node, K key) {
-		if(node == null) {
+	private Entry<K, V> delete(Entry<K, V> entry, K key) {
+		if(entry == null) {
 			return null;
 		}
 
-		int cmp = key.compareTo(node.key);
+		int cmp = key.compareTo(entry.key);
 
 		if(cmp < 0) {
-			node.left = delete(node.left, key);
+			entry.left = delete(entry.left, key);
 		} else if(cmp > 0) {
-			node.right = delete(node.right, key);
+			entry.right = delete(entry.right, key);
 		} else {
 
-			if(node.left == null) {
-				return node.right;
+			if(entry.left == null) {
+				return entry.right;
 			}
 
-			if(node.right == null) {
-				return node.left;
+			if(entry.right == null) {
+				return entry.left;
 			}
 
-			Node<K, V> t = node;
+			Entry<K, V> min = min(entry.right);
+			entry.value = min.value;
+			entry.key = min.key;
 
-			node.value = min(node.right).value;
-
-			node.right = deleteMin(t.right);
+			entry.right = deleteMin(entry.right);
 		}
 
-		return node;
+		return entry;
 	}
 
-	private Node<K, V> deleteMin(Node<K, V> node) {
-		if(node == null) {
+	private Entry<K, V> deleteMin(Entry<K, V> entry) {
+		if(entry == null) {
 			return null;
 		}
 
-		if(node.left == null) {
-			return node.right;
+		if(entry.left == null) {
+			return entry.right;
 		}
 
-		node.left = deleteMin(node.left);
+		entry.left = deleteMin(entry.left);
 
-		return node;
+		return entry;
 
 	}
 
-	private Node<K, V> min(Node<K, V> node) {
-		if(node.left == null) {
+	private Entry<K, V> min(Entry<K, V> entry) {
+		if(entry.left == null) {
 			return null;
 		}
 
-		return min(node.left);
+		return min(entry.left);
 	}
 
-	public Iterable<K> iterable() {
-		Deque<K> queue = new LinkedList<K>();
+	public Iterable<Entry<K, V>> iterable() {
+		Deque<Entry<K, V>> queue = new LinkedList<Entry<K, V>>();
+		inorder(root, queue);
 		return queue;
 
 	}
 
-	public void inOrder() {
-		inOrder(root);
-	}
-
-	private void inOrder(Node<K, V> node) {
-		if(node != null) {
-			inOrder(node.left);
-			System.out.println(node.value);
-			inOrder(node.right);
+	private void inorder(Entry<K, V> entry, Deque<Entry<K, V>> queue) {
+		if(entry != null) {
+			inorder(entry.left, queue);
+			queue.addLast(entry);
+			inorder(entry.right, queue);
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -172,34 +178,55 @@ public class ST<K extends Comparable<K>, V> {
 			nums.put(num, num);
 		}
 
-		nums.inOrder();
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
 		//  delete -4 (no child)
 		System.out.format("delete %d%n", -4);
 		nums.delete(-4);
 
-		nums.inOrder();
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
 		// delete 18 (single child)
 		System.out.format("delete %d%n", 18);
 		nums.delete(18);
 
-		nums.inOrder();
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
 		System.out.format("put %d%n", 12);
 		nums.put(12, 12);
 
-		nums.inOrder();
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
+
+		System.out.format("put %d%n", 13);
+		nums.put(12, 13);
+
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
 		// delete 12 (both child)
 		System.out.format("delete %d%n", 12);
 		nums.delete(12);
 
-		nums.inOrder();
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
+		// delete 19 (both child)
+		System.out.format("delete %d%n", 19);
+		nums.delete(19);
 
-
-
+		for(Entry<Integer, Integer> entry : nums.iterable()) {
+			System.out.format("%d -> %d%n", entry.getKey(), entry.getValue());
+		}
 
 	}
 
