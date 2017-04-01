@@ -6,12 +6,12 @@ import edu.princeton.cs.algs4.RectHV;
 public class KdTree {
 
     private static final class Node {
-        private Point2D p;
-        private Node l;
-        private Node r;
+        private Point2D point;
+        private Node left;
+        private Node right;
 
-        public Node(Point2D p) {
-            this.p = p;
+        public Node(Point2D point) {
+            this.point = point;
         }
     }
 
@@ -39,61 +39,35 @@ public class KdTree {
         }
 
         if (!contains(p)) {
+            root = insert(root, new Node(p), true);
             size++;
-            if (root == null) {
-                root = new Node(p);
-            }
+        }
+    }
 
-            Node cur = root;
-            Node prev = null;
-            boolean x = true;
 
-            while (cur != null) {
-                if (x) {
-                    x = false;
-                    prev = cur;
+    private Node insert(Node parent, Node node, boolean x) {
+        if (parent == null) {
+            return node;
+        }
 
-                    int cmp = Double.compare(p.x(), cur.p.x());
-
-                    if (cmp <= 0) {
-                        cur = cur.l;
-                    } else {
-                        cur = cur.r;
-                    }
-                } else {
-                    x = true;
-                    prev = cur;
-                    int cmp = Double.compare(p.y(), cur.p.y());
-
-                    if (cmp <= 0) {
-                        cur = cur.l;
-                    } else {
-                        cur = cur.r;
-                    }
-                }
-            }
-
-            Node node = new Node(p);
-
-            if (!x) {
-                int cmp = Double.compare(p.x(), prev.p.x());
-
-                if (cmp <= 0) {
-                    prev.l = node;
-                } else {
-                    prev.r = node;
-                }
+        if (x) {
+            int cmp = Double.compare(node.point.x(), parent.point.x());
+            if (cmp <= 0) {
+                parent.left = insert(parent.left, node, !x);
             } else {
+                parent.right = insert(parent.right, node, !x);
+            }
+        } else {
+            int cmp = Double.compare(node.point.y(), parent.point.y());
 
-                int cmp = Double.compare(p.y(), prev.p.y());
-
-                if (cmp <= 0) {
-                    prev.l = node;
-                } else {
-                    prev.r = node;
-                }
+            if (cmp <= 0) {
+                parent.left = insert(parent.left, node, !x);
+            } else {
+                parent.right = insert(parent.right, node, !x);
             }
         }
+
+        return parent;
     }
 
     // does the set contain point p?
@@ -102,59 +76,63 @@ public class KdTree {
             throw new NullPointerException();
         }
 
-        Node cur = root;
-        boolean x = true;
+        return contains(root, p, true) != null;
+    }
 
-        while (cur != null) {
-            if (cur.p.equals(p)) {
-                return true;
-            }
+    private Node contains(Node node, Point2D point, boolean x) {
+        if (node == null) {
+            return node;
+        }
 
-            if (x) {
-                x = false;
-                int cmp = Double.compare(p.x(), cur.p.x());
-
-                if (cmp <= 0) {
-                    cur = cur.l;
-                } else {
-                    cur = cur.r;
-                }
+        if (x) {
+            int cmp = Double.compare(point.x(), node.point.x());
+            if (cmp < 0) {
+                return contains(node.left, point, !x);
+            } else if (cmp > 0) {
+                return contains(node.right, point, !x);
             } else {
-                x = true;
-                int cmp = Double.compare(p.y(), cur.p.y());
-
-                if (cmp <= 0) {
-                    cur = cur.l;
+                if (node.point.equals(point)) {
+                    return node;
                 } else {
-                    cur = cur.r;
+                    return contains(node.left, point, !x);
+                }
+            }
+        } else {
+            int cmp = Double.compare(point.y(), node.point.y());
+
+            if (cmp < 0) {
+                return contains(node.left, point, !x);
+            } else if (cmp > 0) {
+                return contains(node.right, point, !x);
+            } else {
+                if (node.point.equals(point)) {
+                    return node;
+                } else {
+                    return contains(node.left, point, !x);
                 }
             }
         }
-
-        return false;
     }
 
     // draw all points to standard draw
     public void draw() {
-        drawRec(root);
+        draw(root);
     }
 
-    private void drawRec(Node node) {
+    private void draw(Node node) {
         if (node != null) {
-            drawRec(node.l);
-            node.p.draw();
-            drawRec(node.r);
+            draw(node.left);
+            node.point.draw();
+            draw(node.right);
         }
     }
 
-    private Iterable<Point2D> iterable(Node node, Deque<Point2D> stack) {
+    private void points(Node node, Deque<Point2D> points) {
         if (node != null) {
-            iterable(node.l, stack);
-            stack.push(node.p);
-            iterable(node.r, stack);
+            points(node.left, points);
+            points.addLast(node.point);
+            points(node.right, points);
         }
-
-        return stack;
     }
 
 
@@ -163,10 +141,15 @@ public class KdTree {
         if (rect == null) {
             throw new NullPointerException();
         }
+        Deque<Point2D> points = new LinkedList<Point2D>();
+
+        points(root, points);
+
         Deque<Point2D> range = new LinkedList<Point2D>();
-        for (Point2D p : iterable(root, new LinkedList<Point2D>())) {
-            if (rect.contains(p)) {
-                range.push(p);
+
+        for (Point2D point : points) {
+            if (rect.contains(point)) {
+                range.push(point);
             }
         }
         return range;
@@ -178,35 +161,30 @@ public class KdTree {
             throw new NullPointerException();
         }
 
+        Deque<Point2D> points = new LinkedList<Point2D>();
+
+        points(root, points);
 
         double minDistance = 0;
         Point2D nearest = null;
 
-        for (Point2D ps : iterable(root, new LinkedList<Point2D>())) {
+        for (Point2D point : points) {
 
-            if (!p.equals(ps)) {
+            double distance = p.distanceSquaredTo(point);
 
-                double distanceToPS = p.distanceSquaredTo(ps);
+            if (nearest == null) {
+                nearest = point;
+                minDistance = distance;
+            } else {
+                int cmp = Double.compare(distance, minDistance);
 
-                if (nearest == null) {
-                    nearest = ps;
-                    minDistance = distanceToPS;
-                } else {
-                    int cmp = Double.compare(distanceToPS, minDistance);
-
-                    if (cmp < 0) {
-                        minDistance = distanceToPS;
-                        nearest = ps;
-                    }
+                if (cmp < 0) {
+                    minDistance = distance;
+                    nearest = point;
                 }
             }
         }
 
         return nearest;
-    }
-
-    // unit testing of the methods (optional)
-    public static void main(String[] args) {
-
     }
 }
