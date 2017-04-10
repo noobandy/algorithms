@@ -1,6 +1,6 @@
 public class QuickUnionImprovedUF implements UF {
-	int objects[];
-	int weights[];
+	private int objects[];
+	private int weights[];
 
 	public QuickUnionImprovedUF(int n) {
 		super();

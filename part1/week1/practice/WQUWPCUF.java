@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.Arrays;
 
 public class WQUWPCUF implements UF {
 
@@ -18,17 +18,16 @@ public class WQUWPCUF implements UF {
 
 	private int root(int object) {
 		int curr = objects[object];
-		Stack<Integer> path = new Stack<Integer>();
 
 		while (curr != objects[curr]) {
-			path.push(curr);
 			curr = objects[curr];
-			path.push(curr);
 		}
 
 		//compress path to flatten the tree
-		while (!path.isEmpty()) {
-			objects[path.pop()] = curr;
+		while (object != curr) {
+			int newObject = objects[object];
+			objects[object] = curr;
+			object = newObject;
 		}
 
 		return curr;
@@ -43,12 +42,15 @@ public class WQUWPCUF implements UF {
 			return false;
 		} else {
 			if (weights[rootOfObject1] >= weights[rootOfObject2]) {
-				weights[rootOfObject1] = weights[rootOfObject1] + weights[rootOfObject2];
+				weights[rootOfObject1] += weights[rootOfObject2];
 				objects[rootOfObject2] = rootOfObject1;
 			} else {
-				weights[rootOfObject2] = weights[rootOfObject2] + weights[rootOfObject2];
+				weights[rootOfObject2] += weights[rootOfObject2];
 				objects[rootOfObject1] = rootOfObject2;
 			}
+
+			System.out.println(Arrays.toString(objects));
+			System.out.println(Arrays.toString(weights));
 			return true;
 		}
 	}
