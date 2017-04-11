@@ -9,21 +9,18 @@ public class WQUWPCUFMain {
 		int n = scanner.nextInt();
 		UF uf = new WQUWPCUF(n);
 
-		int commands = scanner.nextInt();
+		while(scanner.hasNext()) {
+			int p = scanner.nextInt();
+			int q = scanner.nextInt();
 
-		for (int i = 0; i < commands; i++) {
-			uf.union(scanner.nextInt(), scanner.nextInt());
+			if(uf.connected(p, q)) {
+				System.out.format("%d and %d are already connected.%n", p, q);
+			} else {
+				System.out.format("union %d and %d.%n", p, q);
+				uf.union(p, q);
+			}
 		}
-
-		int queries = scanner.nextInt();
-
-		for (int i = 0; i < queries; i++) {
-			int object1 = scanner.nextInt();
-			int object2 = scanner.nextInt();
-			boolean connected = uf.connected(object1, object2);
-			System.out.format("%d and % d are %s connected.%n", object1, object2, connected ? "" : "not");
-		}
-
+		
 	}
 
 }

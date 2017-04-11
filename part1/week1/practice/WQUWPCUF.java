@@ -43,10 +43,10 @@ public class WQUWPCUF implements UF {
 		} else {
 			if (weights[rootOfObject1] >= weights[rootOfObject2]) {
 				weights[rootOfObject1] += weights[rootOfObject2];
-				objects[rootOfObject2] = rootOfObject1;
+				objects[rootOfObject2] = objects[rootOfObject1];
 			} else {
-				weights[rootOfObject2] += weights[rootOfObject2];
-				objects[rootOfObject1] = rootOfObject2;
+				weights[rootOfObject2] += weights[rootOfObject1];
+				objects[rootOfObject1] = objects[rootOfObject2];
 			}
 
 			System.out.println(Arrays.toString(objects));
