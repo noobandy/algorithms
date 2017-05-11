@@ -1,14 +1,14 @@
 import java.util.*;
 public class GraphTest {
 	public static void main(String[] args) {
-		Graph.Vertex<String> A = new Graph.Vertex<String>("A");
-		Graph.Vertex<String> B = new Graph.Vertex<String>("B");
-		Graph.Vertex<String> C = new Graph.Vertex<String>("C");
-		Graph.Vertex<String> D = new Graph.Vertex<String>("D");
-		Graph.Vertex<String> E = new Graph.Vertex<String>("E");
-		Graph.Vertex<String> F = new Graph.Vertex<String>("F");
+		Graph.Vertex A = new Graph.Vertex("A");
+		Graph.Vertex B = new Graph.Vertex("B");
+		Graph.Vertex C = new Graph.Vertex("C");
+		Graph.Vertex D = new Graph.Vertex("D");
+		Graph.Vertex E = new Graph.Vertex("E");
+		Graph.Vertex F = new Graph.Vertex("F");
 
-		List<Graph.Vertex<String>> vertices = new ArrayList<Graph.Vertex<String>>();
+		List<Graph.Vertex> vertices = new ArrayList<Graph.Vertex>();
 		vertices.add(A);
 		vertices.add(B);
 		vertices.add(C);
@@ -63,13 +63,20 @@ public class GraphTest {
 		Graph graph = new Graph(vertices, edges);
 
 		for(Graph.Vertex v : vertices) {
-			System.out.format("graph %s contains vertex %s.%n", graph.hasGraph.Vertex(v) ? "" : "does not", v.getElement());
+			System.out.format("graph %s contains vertex %s%n", graph.hasVertex(v) ? "" : "does not", v.getElement());
 		}
 
 		for(Graph.Edge e : edges) {
-			System.out.format("graph %s contains edge %s -> %s .%n", graph.hasGraph.Edge(e) ? "" : "does not", 
+			System.out.format("graph %s contains edge %s -> %s%n", graph.hasEdge(e) ? "" : "does not", 
 				e.getSource().getElement(), e.getDestination().getElement());
 		}
 
+
+		List<Graph.Edge> pathAE = graph.getPath(A, E);
+
+		for(Graph.Edge e : pathAE) {
+			System.out.format("%s -> %s%n", e.getSource().getElement(), 
+				e.getDestination().getElement());
+		}
 	}
 }

@@ -1,20 +1,20 @@
 import java.util.*;
 
 public class Graph {
-	private List<Vertex<?>> vertices;
+	private List<Vertex> vertices;
 	private List<Edge> edges;
 
-	public static final class Vertex<E> {
-		private E element;
+	public static final class Vertex {
+		private Object element;
 
-		public Vertex(E element) {
+		public Vertex(Object element) {
 			if(element == null) {
 				throw new IllegalArgumentException("element should not be null");
 			}
 			this.element = element;
 		}
 
-		public E getElement() {
+		public Object getElement() {
 			return element;
 		}
 
@@ -37,10 +37,10 @@ public class Graph {
 	}
 
 	public static final class Edge {
-		private Vertex<?> source;
-		private Vertex<?> destination;
+		private Vertex source;
+		private Vertex destination;
 
-		public Edge(Vertex<?> source, Vertex<?> destination) {
+		public Edge(Vertex source, Vertex destination) {
 			if(source == null) {
 				throw new IllegalArgumentException("source should not be null");
 			}
@@ -83,7 +83,7 @@ public class Graph {
 		this(new ArrayList<Vertex>(), new ArrayList<Edge>());
 	}
 
-	public Graph(List<Vertex<?>> vertices, List<Edge> edges) {
+	public Graph(List<Vertex> vertices, List<Edge> edges) {
 		if(vertices == null) {
 			throw new IllegalArgumentException("vertices should not be null");
 		}
@@ -96,7 +96,7 @@ public class Graph {
 		this.edges = edges;
 	}
 
-	public void addVertex(Vertex<?> vertex) {
+	public void addVertex(Vertex vertex) {
 		if(!vertices.contains(vertex)) {
 			this.vertices.add(vertex);	
 		}
@@ -133,10 +133,137 @@ public class Graph {
 	}
 
 	public boolean isConnected(Vertex source, Vertex destination) {
-		return false;
+		return !bfs(source, destination).isEmpty();
 	}
 
 	public List<Edge> getPath(Vertex source, Vertex destination) {
-		return new ArrayList<Edge>();
+
+		return bfs(source, destination);
+	}
+
+	private static final class SearchVertex {
+		private Vertex vertex;
+		private SearchVertex prev;
+
+		public SearchVertex(Vertex vertex, SearchVertex prev) {
+			this.vertex = vertex;
+			this.prev = prev;
+		}
+
+		public boolean equals(Object other) {
+			if(other == null) {
+				return false;
+			}
+
+			if(this == other) {
+				return true;
+			}
+
+			if(other instanceof SearchVertex) {
+				SearchVertex otherSearchVertex = (SearchVertex) other;
+				return vertex.equals(otherSearchVertex.vertex);
+			}
+
+			return false;
+		}
+	}
+
+	private List<Edge> bfs(Vertex source, Vertex destination) {
+		Deque<SearchVertex> queue = new LinkedList<SearchVertex>();
+		List<Vertex> visited = new ArrayList<Vertex>();
+
+		List<Edge> path = new ArrayList<Edge>();
+		
+
+		queue.addLast(new SearchVertex(source, null));
+
+		while(!queue.isEmpty()) {
+			SearchVertex search = queue.removeFirst();
+			
+			if(search.vertex.equals(destination)) {
+				Deque<Vertex> trail = new LinkedList<Vertex>();
+				while(search != null) {
+					trail.addLast(search.vertex);
+					search = search.prev;
+				}
+				Vertex pSource = trail.removeLast();
+				Vertex pDestination = null;
+
+				while(!trail.isEmpty()) {
+					pDestination = trail.removeLast();
+					path.add(new Edge(pSource, pDestination));
+					pSource = pDestination;
+				}
+
+				break;
+			}
+
+			visited.add(search.vertex);
+
+			List<Vertex> neighbours = neighbours(search.vertex);
+			for(Vertex neighbour: neighbours) {
+				SearchVertex newSearchVertex = new SearchVertex(neighbour, search);
+				if(!visited.contains(newSearchVertex.vertex) && !queue.contains(newSearchVertex)) {
+					queue.addLast(newSearchVertex);	
+				}
+			}
+		}
+
+		return path;
+	}
+
+	private List<Edge> dfs(Vertex source, Vertex destination) {
+		Deque<SearchVertex> stack = new LinkedList<SearchVertex>();
+		List<Vertex> visited = new ArrayList<Vertex>();
+
+		List<Edge> path = new ArrayList<Edge>();
+		
+
+		stack.addLast(new SearchVertex(source, null));
+
+		while(!stack.isEmpty()) {
+			SearchVertex search = stack.removeLast();
+			
+			if(search.vertex.equals(destination)) {
+				Deque<Vertex> trail = new LinkedList<Vertex>();
+				while(search != null) {
+					trail.addLast(search.vertex);
+					search = search.prev;
+				}
+				Vertex pSource = trail.removeLast();
+				Vertex pDestination = null;
+
+				while(!trail.isEmpty()) {
+					pDestination = trail.removeLast();
+					path.add(new Edge(pSource, pDestination));
+					pSource = pDestination;
+				}
+
+				break;
+			}
+
+			visited.add(search.vertex);
+
+			List<Vertex> neighbours = neighbours(search.vertex);
+			for(Vertex neighbour: neighbours) {
+				SearchVertex newSearchVertex = new SearchVertex(neighbour, search);
+				if(!visited.contains(newSearchVertex.vertex) && !stack.contains(newSearchVertex)) {
+					stack.addLast(newSearchVertex);	
+				}
+			}
+		}
+
+		return path;
+	}
+
+	private List<Vertex> neighbours(Vertex vertex) {
+		List<Vertex> neighbours = new ArrayList<Vertex>();
+		for(Edge edge : edges) {
+			if(edge.source.equals(vertex)) {
+				neighbours.add(edge.destination);
+			}
+		}
+
+		return neighbours;
 	}
 }
