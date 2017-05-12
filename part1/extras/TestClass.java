@@ -8,9 +8,12 @@ import java.io.InputStreamReader;
 */
 //import for Scanner and other utility  classes
 import java.util.*;
+import java.math.*;
 
 
 class TestClass {
+    
+    
     public static void main(String args[] ) throws Exception {
         /*
          * Read input from stdin and provide input before running
@@ -21,23 +24,50 @@ class TestClass {
         String line = br.readLine();
         int N = Integer.parseInt(line);
         */
+        
         //Scanner
         Scanner s = new Scanner(System.in);
         int T = s.nextInt();
 
         for (int i = 0; i < T; i++) {
-            int N = s.nextInt();
-            int compartment = (N / 12) + 1;
-            int seat = (12 - ((compartment * 12) - N));
-            int oposite = 12 * (compartment - 1) + (12 - seat + 1) % 12;
-            
-            if(oposite % 6 == 0 || oposite % 6 == 1) {
-                System.out.format("%d %s%n", oposite, "WS");  
-            } else if(oposite % 3 == 0 || oposite % 3 == 1) {
-                System.out.format("%d %s%n", oposite, "AS");
-            } else {
-                System.out.format("%d %s%n", oposite, "MS");
+            int M = s.nextInt();
+            BigDecimal divisor = BigDecimal.ONE;
+            for(int j = 0; j < M; j++) {
+                divisor = divisor.multiply(BigDecimal.TEN);
             }
+            System.out.println(divisor);
+
+            boolean done = false;
+            int numCount = 0;
+            String nums = "";
+            BigDecimal k = BigDecimal.ZERO;
+            BigDecimal fact = BigDecimal.ZERO;
+            while(!done) {
+            	System.out.println(k);
+                if(k.equals(BigDecimal.ZERO) || k.equals(BigDecimal.ONE)) {
+                    fact = BigDecimal.ONE;
+                } else {
+                    fact = fact.multiply(k);
+                }
+                System.out.println(fact);
+                
+                if(fact.remainder(divisor).equals(BigDecimal.ZERO)) {
+                    if(!fact.remainder(divisor.multiply(BigDecimal.TEN)).equals(BigDecimal.ZERO)) {
+                        numCount++;
+                        nums = nums + " " + k;
+                    } else {
+                        done = true;
+                    }
+                }
+                System.out.println(numCount);
+                System.out.println(numCount);
+                
+                k = k.add(BigDecimal.ONE);
+            }
+            
+            System.out.println(numCount);
+            System.out.println(nums.trim());
         }
+        
     }
 }
