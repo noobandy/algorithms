@@ -9,75 +9,64 @@ import java.io.InputStreamReader;
 //import for Scanner and other utility  classes
 import java.util.*;
 
+
 class TestClass {
-    private static Map<String, Integer> cache = new HashMap<String, Integer>();
-
-    private static int compress(char[] chars) {
-        if(chars.length <= 2) {
-            return chars.length;
+    
+    private static int smallestPrimeFactor(int n) {
+        if(n % 2 == 0) {
+            return 2;
         }
-        Integer result = cache.get(new String(chars));
-        if(result != null) {
-            return result;
-        }
-
-         result = chars.length;
-        int s = -1;
-        while((s = capture(chars, s)) >= 0) {
-            char[] newChars = new char[chars.length - 1];
-            for(int j = 0, k = 0; j < chars.length;j++) {
-                if(j != s) {
-                    newChars[k] = chars[j];
-                    k++;
-                }
-            }
-            newChars[s + 1] = chars[s];
-            
-            int tempResult = compress(newChars);
-
-            if(tempResult < result) {
-                result = tempResult;
-            }
-
-            if(result == 2) {
-                break;
-            }
-
-            for(int j = 0, k = 0; j < chars.length;j++) {
-                if(j != s + 2) {
-                    newChars[k] = chars[j];
-                    k++;
-                }
-            }
-
-            newChars[s] = chars[s + 2];
-
-            tempResult = compress(newChars);
-            if(tempResult < result) {
-                result = tempResult;
-            }
-            if(result == 2) {
-                break;
+ 
+        for(int i = 3; i * i <= n;  i = i + 2) {
+            if(n % i == 0) {
+                return i;
             }
         }
-
-        cache.put(new String(chars), result);
         
-        return result;
+        return n;
     }
     
-    private static int capture(char[] chars, int s) {
-        s = s + 1;
-        while(s + 2 < chars.length) {
-            if(chars[s] != chars[s + 2]) {
-                return s;
-            } else {
-                s++;
-            } 
+    private static long sumOfDevisors(int n) {
+        long sd = 0;
+        
+        for(int i = 1; i <= n / 2; i++) {
+            if(n % i == 0) {
+                sd += i;
+            }
         }
-
-        return -1;
+        
+        return sd;
     }
+
+    private static long[] part(int n) {
+        long sm = n;
+        long sd = 1;
+
+        for(int i = 2; i <= n / 2; i++) {
+            if(n % i == 0) {
+                sd += i;
+
+                if(sm == n) {
+                    sm = i;
+                }
+            }
+        }
+        return new long[] {sm, sd};
+    }
+    
+    private static long solution(int n) {
+        long fn = 0;
+        long gn = 0;
+
+        for(int i = 2; i <= n; i++) {
+            long[] part = part(i);
+            fn += part[0];
+            gn += part[1];
+        }
+        
+        return (fn + gn) % n;
+    }
+    
     public static void main(String args[] ) throws Exception {
         /*
          * Read input from stdin and provide input before running
@@ -90,10 +79,12 @@ class TestClass {
         */
         //Scanner
         Scanner s = new Scanner(System.in);
-        int N = s.nextInt();
-        s.nextLine();
-        for (int i = 0; i < N; i++) {
-            System.out.println(compress(s.nextLine().toCharArray()));
+        int T = s.nextInt();
+
+        for (int i = 0; i < T; i++) {
+            int n = s.nextInt();
+            System.out.println(solution(n));
         }
+        
     }
 }
