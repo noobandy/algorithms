@@ -11,62 +11,6 @@ import java.util.*;
 
 
 class TestClass {
-    
-    private static int smallestPrimeFactor(int n) {
-        if(n % 2 == 0) {
-            return 2;
-        }
- 
-        for(int i = 3; i * i <= n;  i = i + 2) {
-            if(n % i == 0) {
-                return i;
-            }
-        }
-        
-        return n;
-    }
-    
-    private static long sumOfDevisors(int n) {
-        long sd = 0;
-        
-        for(int i = 1; i <= n / 2; i++) {
-            if(n % i == 0) {
-                sd += i;
-            }
-        }
-        
-        return sd;
-    }
-
-    private static long[] part(int n) {
-        long sm = n;
-        long sd = 1;
-
-        for(int i = 2; i <= n / 2; i++) {
-            if(n % i == 0) {
-                sd += i;
-
-                if(sm == n) {
-                    sm = i;
-                }
-            }
-        }
-        return new long[] {sm, sd};
-    }
-    
-    private static long solution(int n) {
-        long fn = 0;
-        long gn = 0;
-
-        for(int i = 2; i <= n; i++) {
-            long[] part = part(i);
-            fn += part[0];
-            gn += part[1];
-        }
-        
-        return (fn + gn) % n;
-    }
-    
     public static void main(String args[] ) throws Exception {
         /*
          * Read input from stdin and provide input before running
@@ -82,9 +26,28 @@ class TestClass {
         int T = s.nextInt();
 
         for (int i = 0; i < T; i++) {
-            int n = s.nextInt();
-            System.out.println(solution(n));
+            int N = s.nextInt();
+            int[] times = new int[32];
+            for(int j = 0; j < N; j++) {
+                int num = s.nextInt();
+                for(int k = 0; k < 32; k++) {
+                    if((num & (1 << k)) == (k  + 1)) {
+                        times[k]++;
+                    }
+                }
+                
+            }
+            
+            int max = 0;
+            int maxIndex = 0;
+            for(int j = 0; j < 32; j++) {
+                if(times[j] > max) {
+                    max = times[j];
+                    maxIndex = j;
+                }
+            }
+            System.out.println(Arrays.toString(times));
+            System.out.println(maxIndex);
         }
-        
     }
 }
