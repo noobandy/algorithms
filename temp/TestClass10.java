@@ -1,12 +1,4 @@
-/* IMPORTANT: Multiple classes and nested static classes are supported */
-
-/*
- * uncomment this if you want to read input.
-//imports for BufferedReader
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-*/
-//import for Scanner and other utility  classes
+import java.io.*;
 import java.util.*;
 
 
@@ -47,37 +39,107 @@ class TestClass {
     }
     
     public static void main(String args[] ) throws Exception {
-        /*
-         * Read input from stdin and provide input before running
-         * Use either of these methods for input
+        long start = System.nanoTime();
+        Reader r = new Reader(System.in);
+        PrintWriter w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
 
-        //BufferedReader
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String line = br.readLine();
-        int N = Integer.parseInt(line);
-        */
-        //Scanner
-        Scanner s = new Scanner(System.in);
-        int N = s.nextInt();
+        int N = r.nextInt();
         int[] nums = new int[N]; 
         for (int i = 0; i < N; i++) {
-            nums[i] = s.nextInt();
+            nums[i] = r.nextInt();
         }
         
-        int[][] matrix = matrix(nums);
+        // int[][] matrix = matrix(nums);
         
-        nums = null;
+        // nums = null;
         
-        int Q = s.nextInt();
+        int Q = r.nextInt();
         
         for(int i = 0; i < Q; i++){
-            int x1 = s.nextInt();
-            int y1 = s.nextInt();
-            int x2 = s.nextInt();
-            int y2 = s.nextInt();
+            int x1 = r.nextInt();
+            int y1 = r.nextInt();
+            int x2 = r.nextInt();
+            int y2 = r.nextInt();
             
-            System.out.println(summation(matrix, x1, y1, x2, y2));
+            w.println(summation(nums, x1, y1, x2, y2));
         }
         
+        r.close();
+        long end = System.nanoTime();
+        w.println("time taken "+ (end - start) / 1000000000);
+        w.close();
+    }
+
+
+    private static class Reader {
+
+        private BufferedInputStream bis;
+
+        private byte[] buf;
+
+        private int available;
+
+        private int read;
+
+        public Reader(InputStream is) {
+            bis = new BufferedInputStream(is);
+            buf = new byte[8092];
+        }
+
+        public void close() throws IOException {
+            bis.close();
+        }
+
+        private int next() throws IOException {
+            if (available == read) {
+                available = bis.read(buf);
+                read = 0;
+            }
+
+            if (available == -1) {
+                return -1;
+            }
+
+            return buf[read++];
+
+        }
+
+        private boolean isWhiteSpace(int c) {
+
+            return c == ' ' || c == '\n' || c == '\t' || c == '\r';
+        }
+
+        public int nextInt() throws IOException {
+            int c = next();
+
+            while (isWhiteSpace(c)) {
+                c = next();
+            }
+
+            if (c == -1) {
+                throw new InputMismatchException();
+            }
+
+            int num = 0;
+            int sign = 1;
+
+            if (c == '-') {
+                sign = -1;
+                c = next();
+            }
+
+            if (c == -1) {
+                throw new InputMismatchException();
+            }
+
+            do {
+                num = num * 10 + (c - '0');
+
+                c = next();
+            }
+            while (c != -1 && !isWhiteSpace(c));
+
+            return sign * num;
+        }
     }
 }
