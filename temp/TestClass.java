@@ -1,9 +1,34 @@
-
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 class TestClass {
-
+    public static void main(String args[] ) throws Exception {
+        
+        Reader r = new Reader(System.in);
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+        
+        int N = r.nextInt();
+        
+        int[] nums = new int[1000];
+        
+        for(int i = 0; i < N; i++) {
+            nums[r.nextInt()]++;
+        }
+        
+        int Q = r.nextInt();
+        
+        for(int i = 0; i < Q; i++) {
+            int query = r.nextInt();
+            if(nums[query] > 0) {
+                pw.println(nums[query]);
+            } else {
+                pw.println("NOT PRESENT");
+            }
+        }
+        r.close();
+        pw.close();
+    }
+    
      private static class Reader {
 
         private BufferedInputStream bis;
@@ -74,53 +99,5 @@ class TestClass {
 
             return sign * num;
         }
-    }
-
-    public static void main(String args[] ) throws Exception {
-        long start = System.nanoTime();
-        Reader r = new Reader(System.in);
-        PrintWriter w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-
-        int N = r.nextInt();
-        int Q = r.nextInt();
-        
-        int[] nums = new int[N];
-
-        for(int i = 0; i < N; i++) {
-            nums[i] = r.nextInt();
-        }
-        
-        for(int i = 0; i < Q; i++) {
-            int cmd = r.nextInt();
-            switch(cmd) {
-                case 0:
-                    r.nextInt();
-                    int row = r.nextInt();
-                    if(nums[row - 1] == 0) {
-                        w.println("EVEN");
-                    } else {
-                        w.println("ODD");
-                    }
-                    break;
-                case 1:
-                    int x = r.nextInt();
-                    if(nums[x - 1] == 0) {
-                        nums[x - 1] = 1;
-                    } else {
-                        nums[x - 1] = 0;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        
-        r.close();
-       
-        long end = System.nanoTime();
-
-        w.println("time taken "+ (end - start) / 1000000000);
-
-         w.close();
-    }
+    }    
 }
