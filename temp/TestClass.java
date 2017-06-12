@@ -39,6 +39,21 @@ class TestClass {
               }
             }
         }
+        private int nodes(Node node) {
+            if(node == null) {
+                return 0;
+            }
+            
+            int leftNodes = nodes(node.left);
+            int rightNodes = nodes(node.right);
+            
+            if(leftNodes > rightNodes) {
+                return leftNodes + 1;
+            } else {
+                return rightNodes + 1;
+            }
+        }
+        /*
         private int leftLeaf(Node left) {
             int nodes = 0;
             
@@ -67,11 +82,11 @@ class TestClass {
             
             return nodes;
         }
-        
+        */
         public int diameter() {
             int result = 1;
-            int leftResult = leftLeaf(root.left);
-            int rightResult = rightLeaf(root.right);
+            int leftResult = nodes(root.left);
+            int rightResult = nodes(root.right);
             return result + leftResult + rightResult;
         }
         
