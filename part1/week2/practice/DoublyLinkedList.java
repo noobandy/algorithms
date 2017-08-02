@@ -1,10 +1,10 @@
 public class DoublyLinkedList<E> {
 	
-	private Node head;
+	private Node<E> head;
 	private int size;
 
 	public DoublyLinkedList() {
-		head = new Node();
+		head = new Node<E>();
 		head.next = head;
 		head.prev = head;
 		size = 0;
@@ -27,7 +27,7 @@ public class DoublyLinkedList<E> {
 			throw new RuntimeException("list empty");
 		}
 
-		Node first = head.prev;
+		Node<E> first = head.prev;
 
 		first.next.prev = first.prev;
 		first.prev.next = first.next;
@@ -55,7 +55,7 @@ public class DoublyLinkedList<E> {
 			throw new RuntimeException("list empty");
 		}
 
-		Node last = head.next;
+		Node<E> last = head.next;
 		
 		last.prev.next = last.next;
 		last.next.prev = last.prev;
@@ -73,8 +73,8 @@ public class DoublyLinkedList<E> {
 		return size == 0;
 	}
 
-	private void addAfter(Node after, E element) {
-		Node node = new Node();
+	private void addAfter(Node<E> after, E element) {
+		Node<E> node = new Node<E>();
 		node.element = element;
 		node.next = after.next;
 		node.prev = after;
@@ -85,8 +85,8 @@ public class DoublyLinkedList<E> {
 		size++;
 	}
 
-	private void addBefore(Node before, E element) {
-		Node node = new Node();
+	private void addBefore(Node<E> before, E element) {
+		Node<E> node = new Node<E>();
 		node.element = element;
 		node.next = before.prev;
 		node.prev = before;
@@ -97,9 +97,9 @@ public class DoublyLinkedList<E> {
 		size++;
 	}
 
-	private class Node {
-		Node next;
-		Node prev;
+	private static class Node<E> {
+		Node<E> next;
+		Node<E> prev;
 		E element;
 	}
 
