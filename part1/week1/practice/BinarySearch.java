@@ -7,7 +7,7 @@ public class BinarySearch {
 		int lo = 0;
 		int hi = arr.length - 1;
 
-		while(lo < hi) {
+		while(lo <= hi) {
 			int mid = lo + (hi - lo) / 2;
 			int cmp = arr[mid].compareTo(key);
 
@@ -27,7 +27,7 @@ public class BinarySearch {
 		int lo = 0;
 		int hi = arr.length - 1;
 
-		while(lo < hi) {
+		while(lo <= hi) {
 			int mid = lo + (hi - lo) / 2;
 
 			int cmp = comparator.compare(arr[mid], key);
@@ -43,10 +43,36 @@ public class BinarySearch {
 		return -1;
 	}
 
+	public static <T extends Comparable<T>> int searchR(T[] arr, T key) {
+		return _searchR(arr, key, 0, arr.length - 1, 0);
+	}
+
+	private static <T extends Comparable<T>> int _searchR(T[] arr, T key, int lo, int hi, int depth) {
+		System.out.format("lo: %d, hi: %d, depth: %d%n", lo, hi, depth);
+
+		if(lo > hi) {
+			return - 1;
+		}
+
+		int mid = lo + (hi - lo) / 2;
+
+		int cmp = arr[mid].compareTo(key);
+
+		if(cmp < 0) {
+			return _searchR(arr, key, mid + 1, hi, depth + 1);
+		} else if(cmp > 0) {
+			return _searchR(arr, key, lo, mid - 1, depth + 1);
+		} else {
+			return mid;
+		}
+	}
+
 	public static void main(String[] args) {
 		Integer[] nums = new Integer[]{1,2,3,4,6};
 		Integer key = 4;
 		System.out.format("%d found at %d%n", key, BinarySearch.search(nums, key));
+
+		System.out.format("%d found at %d%n", key, BinarySearch.searchR(nums, key));
 
 		String[] words = new String[] {"Amit", "Anand", "Pratik"};
 		String word = "Anand";
