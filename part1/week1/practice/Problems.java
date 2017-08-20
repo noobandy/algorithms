@@ -116,6 +116,120 @@ public class Problems {
 		return result;
 	}
 
+	// count no of elements less than key
+	public static <T extends Comparable<T>> int lessThan(T[] arr, T key) {
+		int lo = 0;
+		int hi = arr.length - 1;
+
+		int keyIndex = -1;
+
+		while(lo <= hi) {
+			int mid = lo + (hi - lo) / 2;
+
+			int cmp = arr[mid].compareTo(key);
+
+			if(cmp < 0) {
+				lo = mid + 1;
+			} else if(cmp > 0) {
+				hi = mid - 1;
+			} else {
+				keyIndex = mid;
+				break;
+			}
+		}
+
+		
+
+		if(keyIndex >= 0) {
+			int count = keyIndex;
+
+			int i = keyIndex - 1;
+			// left of the key
+			while(i >= 0 && arr[i].compareTo(key) == 0) {
+				count--;
+			}
+
+			return count;
+		} else {
+			// if key does not exists in the given array
+			return lo;
+		}
+	}
+
+	// count no. of elements equals to key
+	public static <T extends Comparable<T>> int countEqual(T[] arr, T key) {
+		int lo = 0;
+		int hi = arr.length - 1;
+
+		int keyIndex = -1;
+
+		while(lo <= hi) {
+			int mid = lo + (hi - lo) / 2;
+
+			int cmp = arr[mid].compareTo(key);
+
+			if(cmp < 0) {
+				lo = mid + 1;
+			} else if(cmp > 0) {
+				hi = mid - 1;
+			} else {
+				keyIndex = mid;
+				break;
+			}
+		}
+
+		
+
+		if(keyIndex >= 0) {
+			int count = 1;
+			int i = keyIndex - 1;
+			// left of the key
+			while(i >= 0 && arr[i].compareTo(key) == 0) {
+				i--;
+				count++;
+			}
+
+			i = keyIndex + 1;
+			// right of the key
+			while(i < arr.length && arr[i].compareTo(key) == 0) {
+				i++;
+				count++;
+			}
+
+			return count;
+		} else {
+			// if key does not exists in the given array
+			return 0;
+		}
+	}
+
+	// arr[i][j] = true if i, j are relative prime else false
+	public static Boolean[][] boolMatrix(int n) {
+
+		Boolean[][] arr = new Boolean[n][n];
+
+		for(int i = 0; i < n; i++) {
+			for(int j = 0; j < n; j++) {
+				arr[i][j] = false;
+			}
+		}
+
+		for(int i = 1; i < n; i++) {
+			for(int j = i + 1; j < n; j++) {
+				if(gcd(i, j) == 1) {
+					arr[i][j] = true;
+					arr[j][i] = true;
+				}
+			}
+		}
+
+		return arr;
+	}
+
+	public static boolean isCircualrShift(String s1, String s2) {
+		int startIndex = s2.lastIndexOf(s1.charAt(0));
+		return s1.equals(s2.substring(startIndex) + s2.substring(0, startIndex));
+	}
 
 	public static void main(String[] args) {
 		Integer[][] matrix = new Integer[3][3];
@@ -167,5 +281,43 @@ public class Problems {
 		a = 36;
 		b = 27;
 		System.out.format("gcd of %d and %d is %d%n", a, b, gcd(a, b));
+
+		Integer[] numsT1 = new Integer[] {1, 2, 3, 4, 6, 7, 8};
+		Integer keyT1 = 5;
+
+		System.out.format("no. of elements less than %d in %s are %d%n", 
+			keyT1, Arrays.toString(numsT1), lessThan(numsT1, keyT1));
+
+		Integer[] numsT2 = new Integer[] {2, 2, 3, 4, 4, 5};
+		Integer keyT2 = 1;
+
+		System.out.format("no. of elements less than %d in %s are %d%n", 
+			keyT2, Arrays.toString(numsT2), lessThan(numsT2, keyT2));
+		
+
+		Integer[] numsT3 = new Integer[] {1, 1, 2, 2, 3, 4, 5, 6, 6, 6};
+		Integer keyT3 = 7;
+
+		System.out.format("no. of elements less than %d in %s are %d%n", 
+			keyT3, Arrays.toString(numsT3), lessThan(numsT3, keyT3));
+
+		System.out.format("no. of elements less than %d in %s are %d%n", 
+			2, Arrays.toString(numsT3), lessThan(numsT3, 2));
+
+		System.out.format("no. of elements less than %d in %s are %d%n", 
+			6, Arrays.toString(numsT3), lessThan(numsT3, 6));
+
+		System.out.format("no. of elements equals to %d in %s are %d%n", 
+			6, Arrays.toString(numsT3), countEqual(numsT3, 6));
+
+		System.out.format("no. of elements equals to %d in %s are %d%n", 
+			7, Arrays.toString(numsT3), countEqual(numsT3, 7));
+
+
+		printMatrix(boolMatrix(5));
+
+		System.out.format("%s is %sa circular shift of %s%n", "ACTGACG", 
+			isCircualrShift("ACTGACG", "TGACGAC") ? "" : "not ", "TGACGAC");
+
 	}
 }
