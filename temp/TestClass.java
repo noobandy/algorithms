@@ -23,19 +23,28 @@ class TestClass {
               Node parent = root;
               for(int i = 0; i < path.length() - 1; i++) {
                   if(path.charAt(i) == 'L') {
+                      if(parent.left == null) {
+                          parent.left = new Node();
+                      }
                       parent = parent.left;
                   } else {
+                      if(parent.right == null) {
+                          parent.right = new Node();
+                      }
                       parent = parent.right;
                   }
               }
             
-              Node node = new Node();
-              node.value = value;
-              
               if(path.charAt(path.length() - 1) == 'L') {
-                  parent.left = node;
+                  if(parent.left == null) {
+                      parent.left = new Node();
+                  }
+                  parent.left.value = value;
               } else {
-                  parent.right = node;
+                  if(parent.right == null) {
+                      parent.right = new Node();
+                  }
+                  parent.right.value = value;
               }
             }
         }
@@ -83,11 +92,23 @@ class TestClass {
             return nodes;
         }
         */
-        public int diameter() {
+        private int _diameter(Node node) {
             int result = 1;
-            int leftResult = nodes(root.left);
-            int rightResult = nodes(root.right);
-            return result + leftResult + rightResult;
+            int leftResult = nodes(node.left);
+            int rightResult = nodes(node.right);
+            int diameter =  result + leftResult + rightResult;
+
+            _diameter(node.left);
+            _diameter(node.right);
+            
+        }
+        public int diameter() {
+            int diameter = -1;
+
+            Node cur = root;
+            while(cur != null) {
+
+            }
         }
         
     }
